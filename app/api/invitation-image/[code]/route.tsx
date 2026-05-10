@@ -11,12 +11,12 @@ const fontsDir = path.join(process.cwd(), "public", "fonts");
 
 function getTypeLabel(type: string): string {
   const labels: Record<string, string> = {
-    winner: "\u0641\u0627\u0626\u0632",
-    companion: "\u0645\u0631\u0627\u0641\u0642",
-    judge: "\u0645\u062d\u0643\u0651\u0645",
-    coordinator: "\u0645\u0646\u0633\u0651\u0642",
-    media: "\u0625\u0639\u0644\u0627\u0645\u064a",
-    other: "\u0645\u062f\u0639\u0648",
+    winner: "فائز",
+    companion: "مرافق",
+    judge: "محكّم",
+    coordinator: "منسّق",
+    media: "إعلامي",
+    other: "مدعو",
   };
   return labels[type] || type;
 }
@@ -46,10 +46,31 @@ export async function GET(
 
     const typeLabel = getTypeLabel(guest.type);
 
+    const el = (
+      tag: string,
+      props: Record<string, unknown>,
+      ...children: (React.ReactNode | null)[]
+    ) => React.createElement(tag, props, ...children.filter(Boolean));
+
+    const textStyle = (
+      size: number,
+      color: string,
+      bold = false,
+      extra: Record<string, unknown> = {}
+    ) => ({
+      fontSize: `${size}px`,
+      color,
+      fontWeight: bold ? 700 : 400,
+      textAlign: "center" as const,
+      direction: "rtl" as const,
+      ...extra,
+    });
+
     const svg = await satori(
-      React.createElement(
+      el(
         "div",
         {
+          lang: "ar",
           style: {
             width: "600px",
             height: "900px",
@@ -58,20 +79,19 @@ export async function GET(
             flexDirection: "column",
             alignItems: "center",
             fontFamily: "Tajawal",
-            direction: "rtl",
             position: "relative",
           },
         },
         // Gold top bar
-        React.createElement("div", {
+        el("div", {
           style: {
             width: "100%",
             height: "6px",
             background: "linear-gradient(to right, #c9a351, #e6c872, #c9a351)",
           },
         }),
-        // Header text
-        React.createElement(
+        // Header
+        el(
           "div",
           {
             style: {
@@ -83,38 +103,22 @@ export async function GET(
               paddingRight: "40px",
             },
           },
-          React.createElement(
-            "div",
-            { style: { color: "#e6c872", fontSize: "16px", marginBottom: "8px" } },
-            "\u064a\u0633\u0631\u0646\u0627 \u062f\u0639\u0648\u062a\u0643\u0645 \u0644\u062d\u0636\u0648\u0631 \u062d\u0641\u0644 \u062a\u0643\u0631\u064a\u0645 \u0627\u0644\u0641\u0627\u0626\u0632\u064a\u0646"
+          el(
+            "p",
+            { style: textStyle(16, "#e6c872", false, { marginBottom: "8px" }) },
+            "يسرنا دعوتكم لحضور حفل تكريم الفائزين"
           ),
-          React.createElement(
-            "div",
-            {
-              style: {
-                color: "white",
-                fontSize: "26px",
-                fontWeight: 700,
-                textAlign: "center",
-                lineHeight: "1.4",
-              },
-            },
-            "\u0628\u062c\u0627\u0626\u0632\u0629 \u0627\u0644\u0623\u0645\u064a\u0631 \u0641\u064a\u0635\u0644 \u0628\u0646 \u0628\u0646\u062f\u0631 \u0628\u0646 \u0639\u0628\u062f\u0627\u0644\u0639\u0632\u064a\u0632"
+          el(
+            "p",
+            { style: textStyle(26, "white", true, { lineHeight: "1.4" }) },
+            "بجائزة الأمير فيصل بن بندر بن عبدالعزيز"
           ),
-          React.createElement(
-            "div",
-            {
-              style: {
-                color: "#e6c872",
-                fontSize: "22px",
-                fontWeight: 700,
-                marginTop: "4px",
-              },
-            },
-            "\u0644\u0644\u062a\u0645\u064a\u0632 \u0648\u0627\u0644\u0625\u0628\u062f\u0627\u0639 \u0641\u064a \u062f\u0648\u0631\u062a\u0647\u0627 \u0627\u0644\u0631\u0627\u0628\u0639\u0629"
+          el(
+            "p",
+            { style: textStyle(22, "#e6c872", true, { marginTop: "4px" }) },
+            "للتميز والإبداع في دورتها الرابعة"
           ),
-          // Divider
-          React.createElement("div", {
+          el("div", {
             style: {
               width: "80px",
               height: "2px",
@@ -124,8 +128,8 @@ export async function GET(
             },
           })
         ),
-        // Guest info box
-        React.createElement(
+        // Guest info
+        el(
           "div",
           {
             style: {
@@ -141,40 +145,29 @@ export async function GET(
               width: "520px",
             },
           },
-          React.createElement(
-            "div",
-            { style: { color: "#e6c872", fontSize: "14px", marginBottom: "4px" } },
-            typeLabel
-          ),
-          React.createElement(
-            "div",
-            {
-              style: {
-                color: "white",
-                fontSize: "28px",
-                fontWeight: 700,
-                textAlign: "center",
-              },
-            },
+          el("p", { style: textStyle(14, "#e6c872") }, typeLabel),
+          el(
+            "p",
+            { style: textStyle(28, "white", true, { marginTop: "4px" }) },
             guest.name
           ),
           guest.category
-            ? React.createElement(
-                "div",
-                { style: { color: "#d1d5db", fontSize: "14px", marginTop: "4px" } },
+            ? el(
+                "p",
+                { style: textStyle(14, "#d1d5db", false, { marginTop: "4px" }) },
                 guest.category
               )
             : null,
           guest.parent_name
-            ? React.createElement(
-                "div",
-                { style: { color: "#9ca3af", fontSize: "12px", marginTop: "4px" } },
-                `\u0645\u0631\u0627\u0641\u0642: ${guest.parent_name}`
+            ? el(
+                "p",
+                { style: textStyle(12, "#9ca3af", false, { marginTop: "4px" }) },
+                `مرافق: ${guest.parent_name}`
               )
             : null
         ),
         // QR Code
-        React.createElement(
+        el(
           "div",
           {
             style: {
@@ -184,7 +177,7 @@ export async function GET(
               marginBottom: "24px",
             },
           },
-          React.createElement(
+          el(
             "div",
             {
               style: {
@@ -194,15 +187,11 @@ export async function GET(
                 display: "flex",
               },
             },
-            React.createElement("img", {
-              src: qrDataUrl,
-              width: 160,
-              height: 160,
-            })
+            el("img", { src: qrDataUrl, width: 160, height: 160 })
           )
         ),
         // Event details
-        React.createElement(
+        el(
           "div",
           {
             style: {
@@ -211,30 +200,20 @@ export async function GET(
               alignItems: "center",
             },
           },
-          React.createElement(
-            "div",
-            { style: { color: "#d1d5db", fontSize: "14px", marginBottom: "4px" } },
-            "\u0627\u0644\u0645\u0642\u0627\u0645 \u0641\u064a \u0631\u062d\u0627\u0628 \u062c\u0627\u0645\u0639\u0629 \u0627\u0644\u0645\u0639\u0631\u0641\u0629 \u0628\u0627\u0644\u062f\u0631\u0639\u064a\u0629"
+          el(
+            "p",
+            { style: textStyle(14, "#d1d5db", false, { marginBottom: "4px" }) },
+            "المقام في رحاب جامعة المعرفة بالدرعية"
           ),
-          React.createElement(
-            "div",
-            {
-              style: {
-                color: "white",
-                fontSize: "18px",
-                fontWeight: 700,
-              },
-            },
-            "\u0627\u0644\u062b\u0644\u0627\u062b\u0627\u0621 25 \u0630\u0648 \u0627\u0644\u0642\u0639\u062f\u0629 1447 \u0647\u0640"
+          el(
+            "p",
+            { style: textStyle(18, "white", true) },
+            "الثلاثاء 25 ذو القعدة 1447 هـ"
           ),
-          React.createElement(
-            "div",
-            { style: { color: "#d1d5db", fontSize: "14px" } },
-            "\u0627\u0644\u0645\u0648\u0627\u0641\u0642 12 \u0645\u0627\u064a\u0648 2026"
-          )
+          el("p", { style: textStyle(14, "#d1d5db") }, "الموافق 12 مايو 2026")
         ),
         // Gold bottom bar
-        React.createElement("div", {
+        el("div", {
           style: {
             width: "100%",
             height: "6px",
@@ -248,8 +227,18 @@ export async function GET(
         width: 600,
         height: 900,
         fonts: [
-          { name: "Tajawal", data: boldFont, weight: 700 as const, style: "normal" as const },
-          { name: "Tajawal", data: regularFont, weight: 400 as const, style: "normal" as const },
+          {
+            name: "Tajawal",
+            data: boldFont,
+            weight: 700 as const,
+            style: "normal" as const,
+          },
+          {
+            name: "Tajawal",
+            data: regularFont,
+            weight: 400 as const,
+            style: "normal" as const,
+          },
         ],
       }
     );
@@ -269,6 +258,9 @@ export async function GET(
     });
   } catch (error) {
     console.error("Error generating image:", error);
-    return NextResponse.json({ error: "Image generation failed" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Image generation failed" },
+      { status: 500 }
+    );
   }
 }

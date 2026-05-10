@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 
 interface GuestData {
@@ -19,7 +19,6 @@ export default function InvitationPage() {
   const [guest, setGuest] = useState<GuestData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const invitationRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     async function fetchGuest() {
@@ -41,17 +40,19 @@ export default function InvitationPage() {
   }, [params.id]);
 
   const downloadImage = async () => {
-    if (!invitationRef.current) return;
-    const html2canvas = (await import("html2canvas")).default;
-    const canvas = await html2canvas(invitationRef.current, {
-      scale: 2,
-      useCORS: true,
-      backgroundColor: "#0d4f4f",
-    });
-    const link = document.createElement("a");
-    link.download = `invitation-${guest?.name || "guest"}.png`;
-    link.href = canvas.toDataURL("image/png");
-    link.click();
+    if (!guest) return;
+    try {
+      const res = await fetch(`/send/api/invitation-image/${guest.qr_code}`);
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.download = `دعوة-${guest.name}.png`;
+      link.href = url;
+      link.click();
+      URL.revokeObjectURL(url);
+    } catch {
+      alert("حدث خطأ في تحميل الصورة");
+    }
   };
 
   if (loading) {
@@ -86,10 +87,7 @@ export default function InvitationPage() {
   return (
     <div className="min-h-screen bg-[#0a3a3a] flex flex-col items-center justify-center p-4">
       {/* Invitation Card */}
-      <div
-        ref={invitationRef}
-        className="w-full max-w-[500px] bg-[#0d4f4f] rounded-2xl overflow-hidden shadow-2xl relative"
-      >
+      <div className="w-full max-w-[500px] bg-[#0d4f4f] rounded-2xl overflow-hidden shadow-2xl relative">
         {/* Decorative top pattern */}
         <div className="absolute top-0 left-0 right-0 h-3 bg-gradient-to-r from-[#c9a351] via-[#e6c872] to-[#c9a351]"></div>
 

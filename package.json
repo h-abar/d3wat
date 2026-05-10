@@ -10,12 +10,14 @@
     "import": "tsx scripts/import-excel.ts"
   },
   "dependencies": {
+    "@resvg/resvg-js": "^2.6.2",
     "html2canvas": "^1.4.1",
     "html5-qrcode": "^2.3.8",
     "next": "16.2.6",
     "qrcode": "^1.5.4",
     "react": "19.2.4",
     "react-dom": "19.2.4",
+    "satori": "^0.26.0",
     "sql.js": "^1.14.1",
     "uuid": "^14.0.0",
     "xlsx": "^0.18.5"

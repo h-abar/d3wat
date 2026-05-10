@@ -13,6 +13,7 @@ interface Guest {
   qr_code: string;
   attended: number;
   invitation_url: string;
+  image_url: string;
 }
 
 interface Stats {
@@ -353,6 +354,15 @@ export default function DashboardPage() {
                           className="text-[#0d4f4f] hover:text-[#c9a351] text-sm font-medium transition-colors"
                         >
                           عرض
+                        </a>
+                        <span className="text-gray-300">|</span>
+                        <a
+                          href={guest.image_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-green-600 hover:text-green-800 text-sm font-medium transition-colors"
+                        >
+                          صورة
                         </a>
                       </div>
                     </td>

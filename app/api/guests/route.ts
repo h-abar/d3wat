@@ -11,6 +11,7 @@ export async function GET(request: Request) {
     const guestsWithUrls = guests.map((guest) => ({
       ...guest,
       invitation_url: `${baseUrl}/send/invitation/${guest.qr_code}`,
+      image_url: `${baseUrl}/send/api/invitation-image/${guest.qr_code}`,
     }));
 
     return NextResponse.json(guestsWithUrls);

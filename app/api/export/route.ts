@@ -24,6 +24,7 @@ export async function GET(request: Request) {
       "الفئة / الصفة": guest.category || "",
       "مرافق لـ": guest.parent_name || "",
       "رابط الدعوة": `${baseUrl}/send/invitation/${guest.qr_code}`,
+      "رابط الصورة": `${baseUrl}/send/api/invitation-image/${guest.qr_code}`,
       "رمز QR": guest.qr_code,
       "الحضور": guest.attended ? "حضر" : "لم يحضر",
     }));
@@ -39,6 +40,7 @@ export async function GET(request: Request) {
       { wch: 30 },  // Category
       { wch: 30 },  // Parent
       { wch: 50 },  // URL
+      { wch: 55 },  // Image URL
       { wch: 20 },  // QR Code
       { wch: 10 },  // Attended
     ];

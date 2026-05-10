@@ -1,0 +1,17 @@
+version: "3.8"
+
+services:
+  da3awat:
+    build: .
+    container_name: da3awat
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./data:/app/data
+    environment:
+      - NODE_ENV=production
+      - WHATSAPP_API_URL=${WHATSAPP_API_URL:-}
+      - WHATSAPP_API_TOKEN=${WHATSAPP_API_TOKEN:-}
+      - WHATSAPP_PHONE_NUMBER_ID=${WHATSAPP_PHONE_NUMBER_ID:-}
+      - BASE_URL=${BASE_URL:-http://localhost:3000}
+    restart: unless-stopped

@@ -22,7 +22,75 @@ interface Stats {
   byCategory: { category: string; count: number }[];
 }
 
+function LoginForm({ onLogin }: { onLogin: () => void }) {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+    try {
+      const res = await fetch("/send/api/auth", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        sessionStorage.setItem("admin_token", data.token);
+        onLogin();
+      } else {
+        setError(data.error || "بيانات الدخول غير صحيحة");
+      }
+    } catch {
+      setError("حدث خطأ في الاتصال");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-[#0d4f4f] flex items-center justify-center p-4">
+      <form onSubmit={handleSubmit} className="bg-white rounded-2xl p-8 w-full max-w-sm shadow-xl text-center">
+        <div className="w-16 h-16 bg-[#0d4f4f] rounded-full flex items-center justify-center mx-auto mb-4">
+          <svg className="w-8 h-8 text-[#e6c872]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+          </svg>
+        </div>
+        <h1 className="text-xl font-bold text-gray-800 mb-2">لوحة إدارة الدعوات</h1>
+        <p className="text-gray-500 text-sm mb-6">أدخل بيانات الدخول</p>
+        <input
+          type="text"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          placeholder="اسم المستخدم"
+          className="w-full border-2 border-gray-200 rounded-lg p-3 text-center mb-3 focus:border-[#0d4f4f] focus:outline-none"
+        />
+        <input
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder="كلمة المرور"
+          className="w-full border-2 border-gray-200 rounded-lg p-3 text-center mb-4 focus:border-[#0d4f4f] focus:outline-none"
+        />
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full bg-[#0d4f4f] text-white py-3 rounded-lg font-bold hover:bg-[#1a6a6a] transition-colors disabled:opacity-50"
+        >
+          {loading ? "جاري الدخول..." : "دخول"}
+        </button>
+        {error && <p className="text-red-500 text-sm mt-3">{error}</p>}
+      </form>
+    </div>
+  );
+}
+
 export default function DashboardPage() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [guests, setGuests] = useState<Guest[]>([]);
   const [stats, setStats] = useState<Stats | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
@@ -31,6 +99,14 @@ export default function DashboardPage() {
   const [copied, setCopied] = useState<string | null>(null);
 
   useEffect(() => {
+    const token = sessionStorage.getItem("admin_token");
+    if (token) {
+      setIsAuthenticated(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!isAuthenticated) return;
     async function fetchData() {
       try {
         const [guestsRes, statsRes] = await Promise.all([
@@ -48,7 +124,7 @@ export default function DashboardPage() {
       }
     }
     fetchData();
-  }, []);
+  }, [isAuthenticated]);
 
   const typeLabels: Record<string, string> = {
     winner: "فائز",
@@ -74,6 +150,15 @@ export default function DashboardPage() {
     setTimeout(() => setCopied(null), 1500);
   };
 
+  const handleLogout = () => {
+    sessionStorage.removeItem("admin_token");
+    setIsAuthenticated(false);
+  };
+
+  if (!isAuthenticated) {
+    return <LoginForm onLogin={() => setIsAuthenticated(true)} />;
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -86,13 +171,22 @@ export default function DashboardPage() {
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <div className="bg-[#0d4f4f] text-white py-6 px-4 shadow-lg">
-        <div className="max-w-6xl mx-auto">
-          <h1 className="text-2xl font-bold text-center">
-            لوحة إدارة الدعوات
-          </h1>
-          <p className="text-center text-gray-300 text-sm mt-1">
-            جائزة الأمير فيصل بن بندر بن عبدالعزيز للتميز والإبداع - الدورة الرابعة
-          </p>
+        <div className="max-w-6xl mx-auto flex items-center justify-between">
+          <button
+            onClick={handleLogout}
+            className="text-gray-300 hover:text-white text-sm transition-colors"
+          >
+            تسجيل خروج
+          </button>
+          <div className="text-center flex-1">
+            <h1 className="text-2xl font-bold">
+              لوحة إدارة الدعوات
+            </h1>
+            <p className="text-gray-300 text-sm mt-1">
+              جائزة الأمير فيصل بن بندر بن عبدالعزيز للتميز والإبداع - الدورة الرابعة
+            </p>
+          </div>
+          <div className="w-20"></div>
         </div>
       </div>
 

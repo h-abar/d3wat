@@ -10,7 +10,7 @@ export async function GET(request: Request) {
     // Add invitation URLs
     const guestsWithUrls = guests.map((guest) => ({
       ...guest,
-      invitation_url: `${baseUrl}/invitation/${guest.qr_code}`,
+      invitation_url: `${baseUrl}/send/invitation/${guest.qr_code}`,
     }));
 
     return NextResponse.json(guestsWithUrls);

@@ -16,7 +16,7 @@ export async function GET(
 
     // Generate QR code as data URL
     const baseUrl = new URL(request.url).origin;
-    const qrData = `${baseUrl}/invitation/${guest.qr_code}`;
+    const qrData = `${baseUrl}/send/invitation/${guest.qr_code}`;
     const qrImage = await QRCode.toDataURL(qrData, {
       width: 300,
       margin: 2,

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import Link from "next/link";
 
 interface ScanResult {
   id: string;
@@ -45,7 +46,7 @@ export default function ScannerPage() {
         { fps: 10, qrbox: { width: 250, height: 250 } },
         async (decodedText) => {
           // Extract QR code from URL
-          const qrCode = decodedText.split("/invitation/").pop() || decodedText;
+          const qrCode = decodedText.split("/invitation/").pop()?.split("?")[0] || decodedText;
           await handleScan(qrCode);
           // Pause scanning after successful read
           await scanner.pause();
@@ -83,7 +84,7 @@ export default function ScannerPage() {
   const handleScan = async (qrCode: string) => {
     try {
       // First check guest info
-      const checkRes = await fetch(`/api/verify/${qrCode}`);
+      const checkRes = await fetch(`/send/api/verify/${qrCode}`);
       if (!checkRes.ok) {
         setStatus("error");
         setMessage("الدعوة غير موجودة في النظام");
@@ -101,7 +102,7 @@ export default function ScannerPage() {
       }
 
       // Mark attendance
-      const res = await fetch(`/api/verify/${qrCode}`, { method: "POST" });
+      const res = await fetch(`/send/api/verify/${qrCode}`, { method: "POST" });
       if (res.ok) {
         const updatedGuest = await res.json();
         setStatus("success");
@@ -296,9 +297,9 @@ export default function ScannerPage() {
 
       {/* Footer with link to dashboard */}
       <div className="p-4 text-center">
-        <a href="/" className="text-gray-400 text-sm hover:text-[#c9a351] transition-colors">
+        <Link href="/" className="text-gray-400 text-sm hover:text-[#c9a351] transition-colors">
           العودة للوحة التحكم
-        </a>
+        </Link>
       </div>
     </div>
   );

@@ -24,7 +24,7 @@ export default function InvitationPage() {
   useEffect(() => {
     async function fetchGuest() {
       try {
-        const res = await fetch(`/api/verify/${params.id}`);
+        const res = await fetch(`/send/api/verify/${params.id}`);
         if (!res.ok) {
           setError("الدعوة غير موجودة");
           return;

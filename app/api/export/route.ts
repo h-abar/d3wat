@@ -23,7 +23,7 @@ export async function GET(request: Request) {
       "النوع": typeLabels[guest.type] || guest.type,
       "الفئة / الصفة": guest.category || "",
       "مرافق لـ": guest.parent_name || "",
-      "رابط الدعوة": `${baseUrl}/invitation/${guest.qr_code}`,
+      "رابط الدعوة": `${baseUrl}/send/invitation/${guest.qr_code}`,
       "رمز QR": guest.qr_code,
       "الحضور": guest.attended ? "حضر" : "لم يحضر",
     }));

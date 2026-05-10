@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 
 interface Guest {
   id: string;
@@ -33,8 +34,8 @@ export default function DashboardPage() {
     async function fetchData() {
       try {
         const [guestsRes, statsRes] = await Promise.all([
-          fetch("/api/guests"),
-          fetch("/api/stats"),
+          fetch("/send/api/guests"),
+          fetch("/send/api/stats"),
         ]);
         const guestsData = await guestsRes.json();
         const statsData = await statsRes.json();
@@ -128,7 +129,7 @@ export default function DashboardPage() {
         {/* Quick Links */}
         <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 mb-6">
           <div className="flex flex-wrap gap-3 justify-center">
-            <a
+            <Link
               href="/scanner"
               className="bg-[#0d4f4f] text-white px-6 py-3 rounded-lg font-bold hover:bg-[#1a6a6a] transition-colors flex items-center gap-2"
             >
@@ -136,8 +137,8 @@ export default function DashboardPage() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
               </svg>
               فتح الماسح
-            </a>
-            <a
+            </Link>
+            <Link
               href="/api/export"
               className="bg-[#c9a351] text-white px-6 py-3 rounded-lg font-bold hover:bg-[#b8923f] transition-colors flex items-center gap-2"
             >
@@ -145,7 +146,7 @@ export default function DashboardPage() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
               تصدير كشف Excel
-            </a>
+            </Link>
           </div>
         </div>
 

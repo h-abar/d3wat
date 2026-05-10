@@ -5,7 +5,7 @@ import QRCode from "qrcode";
 export async function GET(request: Request) {
   try {
     const guests = await getAllGuests();
-    const baseUrl = new URL(request.url).origin;
+    const baseUrl = process.env.BASE_URL || new URL(request.url).origin;
 
     // Add invitation URLs
     const guestsWithUrls = guests.map((guest) => ({

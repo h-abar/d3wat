@@ -9,6 +9,11 @@ import React from "react";
 
 const fontsDir = path.join(process.cwd(), "public", "fonts");
 
+// Satori renders Arabic words LTR, so we reverse word order as workaround
+function rtl(text: string): string {
+  return text.split(" ").reverse().join(" ");
+}
+
 function getTypeLabel(type: string): string {
   const labels: Record<string, string> = {
     winner: "فائز",
@@ -62,7 +67,6 @@ export async function GET(
       color,
       fontWeight: bold ? 700 : 400,
       textAlign: "center" as const,
-      direction: "rtl" as const,
       ...extra,
     });
 
@@ -70,7 +74,6 @@ export async function GET(
       el(
         "div",
         {
-          lang: "ar",
           style: {
             width: "600px",
             height: "900px",
@@ -106,17 +109,17 @@ export async function GET(
           el(
             "p",
             { style: textStyle(16, "#e6c872", false, { marginBottom: "8px" }) },
-            "يسرنا دعوتكم لحضور حفل تكريم الفائزين"
+            rtl("يسرنا دعوتكم لحضور حفل تكريم الفائزين")
           ),
           el(
             "p",
             { style: textStyle(26, "white", true, { lineHeight: "1.4" }) },
-            "بجائزة الأمير فيصل بن بندر بن عبدالعزيز"
+            rtl("بجائزة الأمير فيصل بن بندر بن عبدالعزيز")
           ),
           el(
             "p",
             { style: textStyle(22, "#e6c872", true, { marginTop: "4px" }) },
-            "للتميز والإبداع في دورتها الرابعة"
+            rtl("للتميز والإبداع في دورتها الرابعة")
           ),
           el("div", {
             style: {
@@ -145,24 +148,24 @@ export async function GET(
               width: "520px",
             },
           },
-          el("p", { style: textStyle(14, "#e6c872") }, typeLabel),
+          el("p", { style: textStyle(14, "#e6c872") }, rtl(typeLabel)),
           el(
             "p",
             { style: textStyle(28, "white", true, { marginTop: "4px" }) },
-            guest.name
+            rtl(guest.name)
           ),
           guest.category
             ? el(
                 "p",
                 { style: textStyle(14, "#d1d5db", false, { marginTop: "4px" }) },
-                guest.category
+                rtl(guest.category)
               )
             : null,
           guest.parent_name
             ? el(
                 "p",
                 { style: textStyle(12, "#9ca3af", false, { marginTop: "4px" }) },
-                `مرافق: ${guest.parent_name}`
+                rtl("مرافق: " + guest.parent_name)
               )
             : null
         ),
@@ -203,14 +206,18 @@ export async function GET(
           el(
             "p",
             { style: textStyle(14, "#d1d5db", false, { marginBottom: "4px" }) },
-            "المقام في رحاب جامعة المعرفة بالدرعية"
+            rtl("المقام في رحاب جامعة المعرفة بالدرعية")
           ),
           el(
             "p",
             { style: textStyle(18, "white", true) },
-            "الثلاثاء 25 ذو القعدة 1447 هـ"
+            rtl("الثلاثاء 25 ذو القعدة 1447 هـ")
           ),
-          el("p", { style: textStyle(14, "#d1d5db") }, "الموافق 12 مايو 2026")
+          el(
+            "p",
+            { style: textStyle(14, "#d1d5db") },
+            rtl("الموافق 12 مايو 2026")
+          )
         ),
         // Gold bottom bar
         el("div", {

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
 const ADMIN_USER = process.env.ADMIN_USER || "admin";
-const ADMIN_PASS = process.env.ADMIN_PASS || "Um@@2026+";
+const ADMIN_PASS = process.env.ADMIN_PASS || "Um@2030";
 
 export async function POST(request: Request) {
   try {

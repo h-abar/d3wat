@@ -1,8 +1,21 @@
 import { NextResponse } from "next/server";
 import { getAllGuests } from "@/lib/db";
 import * as XLSX from "xlsx";
+import { rateLimit, getRateLimitHeaders } from "@/lib/rate-limit";
+import { getSecurityHeaders } from "@/lib/security";
 
 export async function GET(request: Request) {
+  const ip = request.headers.get("x-forwarded-for") || request.headers.get("x-real-ip") || "unknown";
+  const rateLimitResult = rateLimit(ip);
+  const headers = { ...getRateLimitHeaders(ip), ...getSecurityHeaders() };
+
+  if (!rateLimitResult.allowed) {
+    return NextResponse.json(
+      { error: "Too many requests" },
+      { status: 429, headers }
+    );
+  }
+
   try {
     const guests = await getAllGuests();
     const baseUrl = process.env.BASE_URL || new URL(request.url).origin;
@@ -52,12 +65,13 @@ export async function GET(request: Request) {
 
     return new NextResponse(buffer, {
       headers: {
+        ...headers,
         "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         "Content-Disposition": "attachment; filename=da3awat-export.xlsx",
       },
     });
   } catch (error) {
     console.error("Error exporting:", error);
-    return NextResponse.json({ error: "Export failed" }, { status: 500 });
+    return NextResponse.json({ error: "Export failed" }, { status: 500, headers });
   }
 }

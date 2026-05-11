@@ -6,6 +6,8 @@ import { Resvg } from "@resvg/resvg-js";
 import fs from "fs";
 import path from "path";
 import React from "react";
+import { rateLimit, getRateLimitHeaders } from "@/lib/rate-limit";
+import { getSecurityHeaders } from "@/lib/security";
 
 const fontsDir = path.join(process.cwd(), "public", "fonts");
 
@@ -30,12 +32,29 @@ export async function GET(
   request: Request,
   { params }: { params: Promise<{ code: string }> }
 ) {
+  const ip = request.headers.get("x-forwarded-for") || request.headers.get("x-real-ip") || "unknown";
+  const rateLimitResult = rateLimit(ip);
+  const headers = { ...getRateLimitHeaders(ip), ...getSecurityHeaders() };
+
+  if (!rateLimitResult.allowed) {
+    return NextResponse.json(
+      { error: "Too many requests" },
+      { status: 429, headers }
+    );
+  }
+
   try {
     const { code } = await params;
+    
+    // Input validation
+    if (!code || typeof code !== "string" || code.length > 100) {
+      return NextResponse.json({ error: "Invalid code" }, { status: 400, headers });
+    }
+
     const guest = await getGuestByQrCode(code);
 
     if (!guest) {
-      return NextResponse.json({ error: "Guest not found" }, { status: 404 });
+      return NextResponse.json({ error: "Guest not found" }, { status: 404, headers });
     }
 
     const baseUrl = process.env.BASE_URL || new URL(request.url).origin;

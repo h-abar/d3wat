@@ -23,7 +23,7 @@ export default function ScannerPage() {
   const scannerRef = useRef<HTMLDivElement>(null);
   const html5QrCodeRef = useRef<unknown>(null);
 
-  const ORGANIZER_PIN = "2026";
+  const ORGANIZER_PIN = process.env.NEXT_PUBLIC_ORGANIZER_PIN || "Um@2030";
 
   const handleLogin = () => {
     if (pin === ORGANIZER_PIN) {
